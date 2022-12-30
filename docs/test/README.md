@@ -16,7 +16,7 @@
 ### Зчитування всіх сутностей (READ)
 
 #### Запит та результат
-![all users query](./UserTestScreenshots/UserGETAllQuery.png)
+![all users query+result](./UserTestScreenshots/UserGETAll.png)
 
 ### Зчитування сутності по id (READ)
 
