@@ -273,3 +273,307 @@ COMMIT;
 
 - RESTfull сервіс для управління даними
 
+## Кореневий файл серверу
+```js  
+const express = require('express');
+const bodyParser = require('body-parser');
+const users = require('./controls/users');
+const sources = require('./controls/sources')
+const connection = require('./database/connect');
+
+const port = 8080;
+const host = 'localhost';
+const app = express();
+connection.connect();
+
+
+app.use(bodyParser.text());
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({extended: false}));
+app.use('/db', users, sources);
+
+app.listen(8080, () => {
+    console.log(`Service starts on http://${host}:${port}`);
+});
+```
+
+## Файл підключення до бази даних
+
+```js  
+const mysql = require('mysql2');
+
+const connectionUrl = 'mysql://root:root@localhost:3307/mydb'
+
+const connection = mysql.createConnection({
+    uri: connectionUrl
+});
+
+module.exports = connection;
+```
+
+## Файл контролерів, які оброблюють запити для user
+```js
+const {Router} = require('express');
+const connection = require('../database/connect');
+
+const users = Router();
+
+const sqlScripts = {
+    getAllUsers: 'SELECT * FROM user',
+    getUserByID: `SELECT * FROM user WHERE id = ?`,
+    createUser: `INSERT INTO user SET id = ?, ?`,
+    updateUserInfo: `UPDATE user SET ? WHERE id = ?`,
+    deleteUser: `DELETE FROM user WHERE id = ?`,
+};
+
+
+/**
+ * Повертає всіх користувачів
+ * та інформацію про них
+ */
+
+users.get('/user', (req, res) => {
+    connection.query(sqlScripts.getAllUsers, (err, result) => {
+        if (err) {
+            return res.status(500).json({
+                message: 'Error on server. Try later!',
+            });
+        }
+        res.send(result)
+    })
+})
+    .post('/user', (req, res) => {
+        return res.status(403).json({
+            message: 'Cannot POST on /user/. Specify Id of user you want to add in link.',
+        });
+    })
+    .put('/user', (req, res) => {
+        return res.status(403).json({
+            message: 'Cannot PUT on /user/. Specify Id of user you want to change info of in link.',
+        });
+    })
+    .delete('/user', (req, res) => {
+        return res.status(403).json({
+            message: 'Cannot DELETE on /user/. Specify Id of user you want to delete info in link.',
+        });
+    })
+
+
+    /**
+     * Повертає користувача за введеним
+     * в адресну строку
+     * ідентифікаційним номером
+     */
+
+    .get('/user/:id', (req, res) => {
+        const id = req.params.id
+        connection.query(sqlScripts.getUserByID, id, (err, [result]) => {
+            if (err) {
+                return res.status(500).json({
+                    message: 'Error on server. Try later!',
+                });
+            }
+            if (!result) {
+                return res.status(404).json({
+                    message: 'No user found with this id. Check id.',
+                });
+            }
+            res.send(result)
+        })
+    })
+
+
+    /**
+     * Створює нового користувача
+     */
+
+    .post('/user/:id', (req, res) => {
+        const {login, name, password} = req.body;
+        if (!(login && name && password)) {
+            res.status(400).json({
+                message: 'All fields must have value. Check again!',
+            });
+            return;
+        }
+        const id = req.params.id
+        connection.query(sqlScripts.createUser, [id, {login, name, password}], (err) => {
+            if (err) {
+                return res.status(500).json({
+                    message: 'Server error!',
+                });
+            }
+            res.send(`User with ID: ${id} was created`)
+        })
+    })
+
+
+    /**
+     * Оновлює інформацію про вибраного користувача
+     */
+
+    .put('/user/:id', (req, res) => {
+        const data = req.body
+        const id = req.params.id
+        const sqlStatement = connection.format(sqlScripts.updateUserInfo, [data, id]);
+        connection.execute(sqlStatement, (err, result) => {
+            if (err || !result.affectedRows) {
+                return res.status(500).json({
+                    message: 'Error on server or wrong id. Try later or use check id!',
+                });
+            }
+            res.send(result);
+        });
+    })
+
+
+    /**
+     * Видаляє вибраного користувача
+     */
+
+    .delete('/user/:id', (req, res) => {
+        const id = req.params.id
+        connection.query(sqlScripts.deleteUser, id, (err, result) => {
+            if (err || !result.affectedRows) {
+                return res.status(500).json({
+                    message: 'Error on server or wrong id. Try later or use check id!',
+                });
+            }
+            res.send(`User with ID:${id} was deleted`)
+        })
+    })
+module.exports = users;
+```
+
+## Файл контролерів, які оброблюють запити для source
+```js
+const {Router} = require('express');
+const connection = require('../database/connect');
+
+const sources = Router();
+
+const sqlScripts = {
+    getAllSources: 'SELECT * FROM source',
+    getSourceByID: `SELECT * FROM source WHERE id = ?`,
+    createSource: `INSERT INTO source SET id = ?, ?`,
+    updateSourceInfo: `UPDATE source SET ? WHERE id = ?`,
+    deleteSource: `DELETE FROM source WHERE id = ?`,
+};
+
+
+    /**
+     * Повертає всі джерела
+     */
+
+sources.get('/source', (req, res) => {
+    connection.query(sqlScripts.getAllSources, (err, result) => {
+        if (err) {
+            return res.status(500).json({
+                message: 'Error on server. Try later!',
+            });
+        }
+        res.send(result)
+    })
+})
+    .post('/source', (req, res) => {
+        return res.status(403).json({
+            message: 'Cannot POST on /source/. Specify Id of source you want to create in link.',
+        });
+    })
+    .put('/source', (req, res) => {
+        return res.status(403).json({
+            message: 'Cannot PUT on /source/. Specify Id of source you want to change info of in link.',
+        });
+    })
+    .delete('/source', (req, res) => {
+        return res.status(403).json({
+            message: 'Cannot DELETE on /source/. Specify Id of source you want to delete in link.',
+        });
+    })
+
+
+    /**
+     * Повертає джерело за введеним
+     * в адресну строку
+     * ідентифікаційним номером
+     */
+
+    .get('/source/:id', (req, res) => {
+        const id = req.params.id
+        connection.query(sqlScripts.getSourceByID, id, (err, [result]) => {
+            if (err) {
+                return res.status(500).json({
+                    message: 'Error on server. Try later!',
+                });
+            }
+            if (!result) {
+                return res.status(404).json({
+                    message: 'No source found with this id. Check id.',
+                });
+            }
+            res.send(result)
+        })
+    })
+
+
+    /**
+     * Створює нове джерело
+     */
+
+    .post('/source/:id', (req, res) => {
+        const {url, key} = req.body;
+        if (!(url && key)) {
+            res.status(400).json({
+                message: 'All fields must have value. Check again!',
+            });
+            return;
+        }
+        const id = req.params.id
+        connection.query(sqlScripts.createSource, [id, {url, key}], (err) => {
+            if (err) {
+                return res.status(500).json({
+                    message: 'Server error!',
+                });
+            }
+            res.send(`Source with ID: ${id} was created`)
+        })
+    })
+
+
+    /**
+     * Оновлює інформацію про вибране джерело
+     */
+
+    .put('/source/:id', (req, res) => {
+        const data = req.body
+        const id = req.params.id
+        const sqlStatement = connection.format(sqlScripts.updateSourceInfo, [data, id]);
+        connection.execute(sqlStatement, (err, result) => {
+            if (err || !result.affectedRows) {
+                return res.status(500).json({
+                    message: 'Error on server or wrong id. Try later or use check id!',
+                });
+            }
+            res.send(result);
+        });
+    })
+
+
+    /**
+     * Видаляє вибране джерело
+     */
+
+    .delete('/source/:id', (req, res) => {
+        const id = req.params.id
+        connection.query(sqlScripts.deleteSource, id, (err, result) => {
+            if (err || !result.affectedRows) {
+                return res.status(500).json({
+                    message: 'Error on server or wrong id. Try later or use check id!',
+                });
+            }
+            res.send(`User with ID:${id} was deleted`)
+        })
+    })
+
+module.exports = sources;
+```
+
