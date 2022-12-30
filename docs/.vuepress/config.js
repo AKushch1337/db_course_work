@@ -15,7 +15,7 @@ module.exports = {
     }]
   ],
   port: 3030,
-  base: '/media-content-analyze-system/',
+  base: '/db_course_work/',
   theme: 'cool',
   // dest: 'dist',
   head: [
@@ -76,7 +76,7 @@ module.exports = {
 
     lastUpdated: 'Останнє оновлення', // string | boolean
       // Assumes GitHub. Can also be a full GitLab url.
-    repo: 'https://github.com/AKushch1337/media-content-analyze-system',
+    repo: 'https://github.com/AKushch1337/db_course_work',
     // Customising the header label
     // Defaults to "GitHub"/"GitLab"/"Bitbucket" depending on `themeConfig.repo`
     repoLabel: 'Github',
