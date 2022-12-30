@@ -7,21 +7,9 @@ footer: "ECL 2.0 Licensed | Copyright © [2022] [Артем КУЩ]"
 ---
 
 
-**Виконали:** 
+**Виконав:** 
 
 *студент 2-го курсу, групи ІМ-13*<span padding-right:5em></span> **[Артем Кущ](https://t.me/omegalulist)**
-
-*студент 2-го курсу, групи ІМ-13*<span padding-right:5em></span> **[Роман Литвинюк](https://t.me/n0pee0)**
-
-*студент 2-го курсу, групи ІМ-13*<span padding-right:5em></span> **[Михайло Моляков](https://t.me/mishelmeow)**
-
-*студент 2-го курсу, групи ІМ-13*<span padding-right:5em></span> **[Кирило Біляшов](https://t.me/innuendo1235)**
-
-*студент 2-го курсу, групи ІМ-13*<span padding-right:5em></span> **[Іван Лотохін](https://t.me/chebelok)**
-
-*студент 2-го курсу, групи IM-13*<span padding-right:5em></span> **[Яцук Владислав](https://t.me/vladyatsuk)**
-
-*студент 2-го курсу, групи ІМ-13*<span padding-right:5em></span> **[Дмитро Тавлуй](https://t.me/demasmxrxz)**
 
 **Керівник**
 

@@ -3,6 +3,7 @@
 В рамках проекту розробляється:
 ## SQL-скрипт для створення та початкового наповнення бази даних
 ```sql
+
 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0;
 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';
@@ -245,17 +246,6 @@ START TRANSACTION;
 USE `mydb`;
 INSERT INTO `mydb`.`source` (`id`, `url`, `key`) VALUES (DEFAULT, 'https://tsn.ua', 231);
 INSERT INTO `mydb`.`source` (`id`, `url`, `key`) VALUES (DEFAULT, 'https://radio.nv.ua', 34);
-
-COMMIT;
-
-
--- -----------------------------------------------------
--- Data for table `mydb`.`role`
--- -----------------------------------------------------
-START TRANSACTION;
-USE `mydb`;
-INSERT INTO `mydb`.`role` (`id`, `name`, `description`) VALUES (DEFAULT, 'user', 'User');
-INSERT INTO `mydb`.`role` (`id`, `name`, `description`) VALUES (DEFAULT, 'admin', 'Administrator');
 
 COMMIT;
 
