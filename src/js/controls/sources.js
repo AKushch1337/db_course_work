@@ -11,6 +11,11 @@ const sqlScripts = {
     deleteSource: `DELETE FROM source WHERE id = ?`,
 };
 
+
+    /**
+     * Повертає всі джерела
+     */
+
 sources.get('/source', (req, res) => {
     connection.query(sqlScripts.getAllSources, (err, result) => {
         if (err) {
@@ -36,6 +41,14 @@ sources.get('/source', (req, res) => {
             message: 'Cannot DELETE on /source/. Specify Id of source you want to delete in link.',
         });
     })
+
+
+    /**
+     * Повертає джерело за введеним
+     * в адресну строку
+     * ідентифікаційним номером
+     */
+
     .get('/source/:id', (req, res) => {
         const id = req.params.id
         connection.query(sqlScripts.getSourceByID, id, (err, [result]) => {
@@ -52,6 +65,12 @@ sources.get('/source', (req, res) => {
             res.send(result)
         })
     })
+
+
+    /**
+     * Створює нове джерело
+     */
+
     .post('/source/:id', (req, res) => {
         const {url, key} = req.body;
         if (!(url && key)) {
@@ -70,6 +89,12 @@ sources.get('/source', (req, res) => {
             res.send(`Source with ID: ${id} was created`)
         })
     })
+
+
+    /**
+     * Оновлює інформацію про вибране джерело
+     */
+
     .put('/source/:id', (req, res) => {
         const data = req.body
         const id = req.params.id
@@ -83,6 +108,12 @@ sources.get('/source', (req, res) => {
             res.send(result);
         });
     })
+
+
+    /**
+     * Видаляє вибране джерело
+     */
+
     .delete('/source/:id', (req, res) => {
         const id = req.params.id
         connection.query(sqlScripts.deleteSource, id, (err, result) => {

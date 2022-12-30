@@ -11,6 +11,12 @@ const sqlScripts = {
     deleteUser: `DELETE FROM user WHERE id = ?`,
 };
 
+
+/**
+ * Повертає всіх користувачів
+ * та інформацію про них
+ */
+
 users.get('/user', (req, res) => {
     connection.query(sqlScripts.getAllUsers, (err, result) => {
         if (err) {
@@ -36,6 +42,14 @@ users.get('/user', (req, res) => {
             message: 'Cannot DELETE on /user/. Specify Id of user you want to delete info in link.',
         });
     })
+
+
+    /**
+     * Повертає користувача за введеним
+     * в адресну строку
+     * ідентифікаційним номером
+     */
+
     .get('/user/:id', (req, res) => {
         const id = req.params.id
         connection.query(sqlScripts.getUserByID, id, (err, [result]) => {
@@ -52,6 +66,12 @@ users.get('/user', (req, res) => {
             res.send(result)
         })
     })
+
+
+    /**
+     * Створює нового користувача
+     */
+
     .post('/user/:id', (req, res) => {
         const {login, name, password} = req.body;
         if (!(login && name && password)) {
@@ -70,6 +90,12 @@ users.get('/user', (req, res) => {
             res.send(`User with ID: ${id} was created`)
         })
     })
+
+
+    /**
+     * Оновлює інформацію про вибраного користувача
+     */
+
     .put('/user/:id', (req, res) => {
         const data = req.body
         const id = req.params.id
@@ -83,6 +109,12 @@ users.get('/user', (req, res) => {
             res.send(result);
         });
     })
+
+
+    /**
+     * Видаляє вибраного користувача
+     */
+
     .delete('/user/:id', (req, res) => {
         const id = req.params.id
         connection.query(sqlScripts.deleteUser, id, (err, result) => {
