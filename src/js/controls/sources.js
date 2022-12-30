@@ -1,18 +1,18 @@
 const {Router} = require('express');
 const connection = require('../database/connect');
 
-const users = Router();
+const sources = Router();
 
 const sqlScripts = {
-    getAllUsers: 'SELECT * FROM user',
-    getUserByID: `SELECT * FROM user WHERE id = ?`,
-    createUser: `INSERT INTO user SET id = ?, ?`,
-    updateUserInfo: `UPDATE user SET ? WHERE id = ?`,
-    deleteUser: `DELETE FROM user WHERE id = ?`,
+    getAllSources: 'SELECT * FROM source',
+    getSourceByID: `SELECT * FROM source WHERE id = ?`,
+    createSource: `INSERT INTO source SET id = ?, ?`,
+    updateSourceInfo: `UPDATE source SET ? WHERE id = ?`,
+    deleteSource: `DELETE FROM source WHERE id = ?`,
 };
 
-users.get('/user', (req, res) => {
-    connection.query(sqlScripts.getAllUsers, (err, result) => {
+sources.get('/source', (req, res) => {
+    connection.query(sqlScripts.getAllSources, (err, result) => {
         if (err) {
             return res.status(500).json({
                 message: 'Error on server. Try later!',
@@ -21,24 +21,24 @@ users.get('/user', (req, res) => {
         res.send(result)
     })
 })
-    .post('/user', (req, res) => {
+    .post('/source', (req, res) => {
         return res.status(403).json({
-            message: 'Cannot POST on /user/. Specify Id of user you want to add in link.',
+            message: 'Cannot POST on /source/. Specify Id of source you want to create in link.',
         });
     })
-    .put('/user', (req, res) => {
+    .put('/source', (req, res) => {
         return res.status(403).json({
-            message: 'Cannot PUT on /user/. Specify Id of user you want to change info of in link.',
+            message: 'Cannot PUT on /source/. Specify Id of source you want to change info of in link.',
         });
     })
-    .delete('/user', (req, res) => {
+    .delete('/source', (req, res) => {
         return res.status(403).json({
-            message: 'Cannot DELETE on /user/. Specify Id of user you want to delete info in link.',
+            message: 'Cannot DELETE on /source/. Specify Id of source you want to delete in link.',
         });
     })
-    .get('/user/:id', (req, res) => {
+    .get('/source/:id', (req, res) => {
         const id = req.params.id
-        connection.query(sqlScripts.getUserByID, id, (err, [result]) => {
+        connection.query(sqlScripts.getSourceByID, id, (err, [result]) => {
             if (err) {
                 return res.status(500).json({
                     message: 'Error on server. Try later!',
@@ -46,34 +46,34 @@ users.get('/user', (req, res) => {
             }
             if (!result) {
                 return res.status(404).json({
-                    message: 'No user found with this id. Check id.',
+                    message: 'No source found with this id. Check id.',
                 });
             }
             res.send(result)
         })
     })
-    .post('/user/:id', (req, res) => {
-        const {login, name, password} = req.body;
-        if (!(login && name && password)) {
+    .post('/source/:id', (req, res) => {
+        const {url, key} = req.body;
+        if (!(url && key)) {
             res.status(400).json({
                 message: 'All fields must have value. Check again!',
             });
             return;
         }
         const id = req.params.id
-        connection.query(sqlScripts.createUser, [id, {login, name, password}], (err) => {
+        connection.query(sqlScripts.createSource, [id, {url, key}], (err) => {
             if (err) {
                 return res.status(500).json({
                     message: 'Server error!',
                 });
             }
-            res.send(`User with ID: ${id} was created`)
+            res.send(`Source with ID: ${id} was created`)
         })
     })
-    .put('/user/:id', (req, res) => {
+    .put('/source/:id', (req, res) => {
         const data = req.body
         const id = req.params.id
-        const sqlStatement = connection.format(sqlScripts.updateUserInfo, [data, id]);
+        const sqlStatement = connection.format(sqlScripts.updateSourceInfo, [data, id]);
         connection.execute(sqlStatement, (err, result) => {
             if (err || !result.affectedRows) {
                 return res.status(500).json({
@@ -83,9 +83,9 @@ users.get('/user', (req, res) => {
             res.send(result);
         });
     })
-    .delete('/user/:id', (req, res) => {
+    .delete('/source/:id', (req, res) => {
         const id = req.params.id
-        connection.query(sqlScripts.deleteUser, id, (err, result) => {
+        connection.query(sqlScripts.deleteSource, id, (err, result) => {
             if (err || !result.affectedRows) {
                 return res.status(500).json({
                     message: 'Error on server or wrong id. Try later or use check id!',
@@ -94,4 +94,5 @@ users.get('/user', (req, res) => {
             res.send(`User with ID:${id} was deleted`)
         })
     })
-module.exports = users;
+
+module.exports = sources;
